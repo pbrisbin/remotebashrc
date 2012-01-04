@@ -29,8 +29,9 @@ Anyone who wants to solve this puzzle given the following (arbitrary)
 restraints is more than welcome:
 
 1. Don't call ssh more than once.
-2. Don't call scp or sftp or any other tool networking tool to send the 
-   file separately.
+2. Don't call scp or sftp or any other networking tool to send the file 
+   separately.
 3. Accept and use any and all valid ssh options.
 4. Don't change the behavior of ssh (i.e. adding Control files).
 5. Don't setup any ad-hoc shared network storage.
+6. Keep is short and simple.
