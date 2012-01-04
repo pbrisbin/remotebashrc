@@ -1,52 +1,45 @@
-RemoteBashRC.sh
-===============
-What is it?
------------
-I work doing tech support for a dedicated server hosting company. So naturally, we deal with lots of servers every day, and one of the guys I work with said something like “I wish all my aliases would follow me to other servers”. That sounded like a cool idea to me, and basically explains what the script does. It will open a persistant ssh connection to the server you specify, use scp to copy $bashrc_remote to /tmp on the server, initiate an actual ssh session invoking bash with the –rcfile option to automatically source the bashrc_remote file, and then delete it when you exit the remote shell. Since I’m using persistant ssh connections, this will only ask you for the remote password once. Any additional ssh connections to the same server/user/port while the script is running automatically re-uses the connection.
+# RemoteBashRC
 
+## What is it?
 
- 
-How do I use it?
-----------------
-Download the script from below. You can either use the included bashrc-remote which has some useful aliases added to it already(including a lot of plesk-specific ones that only get sourced if plesk’s installed), or you can choose to use your own bashrc. Open up remotebashrc.sh in a text editor, and change the bashrc_remote variable to the location of the bashrc you want to use. By default, it’s set to ~/bashrc-remote because I like to keep a separate .bashrc on my local shell with functions and aliases I don’t want on other servers.
+As per justyns:
 
+> I work doing tech support for a dedicated server hosting company. So 
+> naturally, we deal with lots of servers every day, and one of the guys 
+> I work with said something like “I wish all my aliases would follow me 
+> to other servers”. That sounded like a cool idea to me, and basically 
+> explains what the script does.
 
- 
-You can run it like this: remotebashrc user port host
-Example: ./remotebashrc.sh root 22 10.0.0.2
+I took his original idea and pretty much completely rewrote the thing. 
 
-Until I clean it up, you can add alias like this to your .bashrc file:
-alias root=’~/remotebashrc.sh root 22′;
-Then to connect to a remote server using the root server, all you need to do is type ‘root myserver.com’
+Not that it was bad, I just already use persistent connections myself 
+and thought that it would be simpler if you just `cat` your bashrc into 
+the ssh program and let it write out the bashrc on the other side before 
+launching the shell.
 
+I also wanted this program to be a stand-in for ssh, so I pass all the 
+options through as is.
 
- 
-Download
+## How to use it?
 
-From SVN
+Use the script in place of ssh in any way you wish. I prefer the usage 
+be transparent, so I do something like:
 
-[note 08/16/2010:  I just switched justynshull.com over to my vps instead of dreamhost, so subversion isn't working yet.    E-mail me if you really want the latest version]
-You can check this script out from a public read-only svn repo by issuing this command:
-svn co http://justynshull.com/dev/remotebashrc/ remotebashrc
-And to update, just type: svn up
+    # create a local bin and put in the front of the path so it's 
+    # programs take precendence.
+    mkdir ~/bin
+    export PATH=$HOME/bin:$PATH
 
-Tarball
+    # then create a custom ssh there
+    cp remotebashrc ~/bin/ssh
 
-Download the latest [stable] version here(12/01/09): remotebashrc.tar.gz
+Then just use ssh as normal.
 
-ChangeLog
----------
-11/30/2009
-- Initial commit to svn
-12/01/2009
-- by default, the script only uploads the bashrc file now and tells you to source it manually. bashrc-remote also automatically tries to delete itself after you source it now
-12/02/2009
-- added some new aliases to the bashrc-remote file (lla, llah, :q, :q!, and :wq)
-- added a couple commands to the end of bashrc-remote to display the servers uptime/load and total processes when you first log in
-- added a line to show the currently running services.. kind of.. It uses an array of process names, and pidof to see if they’re running
-- if ~/.bashrc exists, source it before doing anything else. bashrc_remote will overwrite anything in it though
-- changed the default PS1 prompt.
-- added /sbin and /usr/sbin to PATH
-- added a $debug option to remotebashrc.sh
-02/14/2010
-- changed $bashrc_remote to look for bashrc-remote in the same directory as remotebashrc.sh instead of ~/
+## Options
+
+`--tmpfile` and `--rcfile` will be accepted as options to the script. 
+They determine where to write the bashrc file on the remote and where to 
+read it on the local respectively.
+
+All other options are assumed to be for `ssh` and will be passed through 
+directly.
