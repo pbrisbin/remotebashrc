@@ -10,36 +10,27 @@ As per justyns:
 > to other servers”. That sounded like a cool idea to me, and basically 
 > explains what the script does.
 
-I took his original idea and pretty much completely rewrote the thing. 
+## Usage
 
-Not that it was bad, I just already use persistent connections myself 
-and thought that it would be simpler if you just `cat` your bashrc into 
-the ssh program and let it write out the bashrc on the other side before 
-launching the shell.
+    /path/to/script user@host [port]
 
-I also wanted this program to be a stand-in for ssh, so I pass all the 
-options through as is.
+## Why fork?
 
-## How to use it?
+I originally thought this could be accomplished more simply by reading 
+the local bashrc into the `ssh` process's `stdin`, then `cat`ting it out 
+to the temp location before starting the shell.
 
-Use the script in place of ssh in any way you wish. I prefer the usage 
-be transparent, so I do something like:
+After numerous attempts, I've learned that this is very hard. Utilizing 
+`stdin` for the data renders `ssh` unable to give you a shell. I'm still 
+hoping to get this route working; but for now, I've just slimmed down 
+the script a little so things are more straight forward and less chatty. 
 
-    # create a local bin and put in the front of the path so it's 
-    # programs take precendence.
-    mkdir ~/bin
-    export PATH=$HOME/bin:$PATH
+Anyone who wants to solve this puzzle given the following (arbitrary) 
+restraints is more than welcome:
 
-    # then create a custom ssh there
-    cp remotebashrc ~/bin/ssh
-
-Then just use ssh as normal.
-
-## Options
-
-`--tmpfile` and `--rcfile` will be accepted as options to the script. 
-They determine where to write the bashrc file on the remote and where to 
-read it on the local respectively.
-
-All other options are assumed to be for `ssh` and will be passed through 
-directly.
+1. Don't call ssh more than once.
+2. Don't call scp or sftp or any other tool networking tool to send the 
+   file separately.
+3. Accept and use any and all valid ssh options.
+4. Don't change the behavior of ssh (i.e. adding Control files).
+5. Don't setup any ad-hoc shared network storage.
